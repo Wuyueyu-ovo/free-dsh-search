@@ -1,5 +1,8 @@
 # free-dsh-search
 
+[![ci](https://github.com/Wuyueyu-ovo/free-dsh-search/actions/workflows/ci.yml/badge.svg)](https://github.com/Wuyueyu-ovo/free-dsh-search/actions/workflows/ci.yml)
+[![license](https://img.shields.io/badge/license-MIT-black.svg)](LICENSE)
+
 Free-tier web search providers for [DeepSeek Harness](https://www.deepseek.com/harness) (DSH): Tavily, Serper, Exa, Firecrawl and LangSearch, with **priority-based fallback** — a stand-in for the paid DeepSeek Search API.
 
 DSH resolves web search through the pluggable `ctx.web` seam. This bundle registers providers into it, so they appear in **Plugins → Web search and fetch**. It modifies no shipped dsh file and overrides no deployment composition.

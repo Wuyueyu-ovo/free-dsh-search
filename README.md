@@ -1,5 +1,8 @@
 # free-dsh-search
 
+[![ci](https://github.com/Wuyueyu-ovo/free-dsh-search/actions/workflows/ci.yml/badge.svg)](https://github.com/Wuyueyu-ovo/free-dsh-search/actions/workflows/ci.yml)
+[![license](https://img.shields.io/badge/license-MIT-black.svg)](LICENSE)
+
 给 [DeepSeek Harness](https://www.deepseek.com/harness)（DSH）加上五家有免费额度的网页搜索源，替代原生 DeepSeek Search API，并支持**按优先级失败降级**。
 
 DSH 的网页搜索走 `ctx.web` 这个可插拔的搜索能力接口。本插件把自己实现的 provider 注册进去，于是在 **Plugins → Web search and fetch** 里就能把它们选为搜索源——不修改任何 dsh 自带文件，也不覆盖部署组合。
