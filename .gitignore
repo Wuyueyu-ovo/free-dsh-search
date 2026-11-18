@@ -1,0 +1,24 @@
+# 依赖与构建产物
+node_modules/
+dist/
+*.tsbuildinfo
+
+# 本地环境与密钥（DeepSeek Harness 的凭据存在 $DSH_HOME，不在仓库里）
+.env
+.env.*
+!.env.example
+credentials*.yaml
+
+# 打包产物
+*.tgz
+
+# 日志与临时文件
+*.log
+*.tmp
+.cache/
+
+# 编辑器与系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

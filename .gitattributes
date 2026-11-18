@@ -1,0 +1,4 @@
+# 统一换行与编码：仓库内一律 LF，避免 Windows 检出成 CRLF
+* text=auto eol=lf
+*.svg text
+*.yml text

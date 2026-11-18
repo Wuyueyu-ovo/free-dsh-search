@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "免费网页搜索",
+    "description": "Tavily、Serper、Exa、Firecrawl、LangSearch 的免费额度搜索，替代 DeepSeek Search API。",
+    "detail": "docs/DETAIL.md"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Free web search",
+    "description": "Free-tier Tavily, Serper, Exa, Firecrawl and LangSearch in place of the DeepSeek Search API.",
+    "detail": "docs/DETAIL.md"
+  }
+}
