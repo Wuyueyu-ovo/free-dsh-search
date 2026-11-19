@@ -1,6 +1,6 @@
 {
   "name": "free-dsh-search",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Free-tier web search providers (Tavily, Serper, Exa, Firecrawl, LangSearch) for DeepSeek Harness, with priority-based fallback.",
   "type": "module",
   "license": "MIT",
