@@ -52,6 +52,8 @@ window.__ModuleLoader__.load({
         testing: '测试中',
         orderHint: '优先级：选中 Free search (auto) 时按下面的顺序依次尝试，失败自动降级。',
         testHint: '测试是一次真实的最小搜索，每家消耗 1 次额度。',
+        lastProvider: '上次 · {provider} · {time}',
+        lastNone: '上次 · 还没有搜索过',
         currentProvider: '当前搜索源',
         unsetProvider: '未设置',
         adopt: '设为搜索源',
@@ -100,6 +102,8 @@ window.__ModuleLoader__.load({
         testing: 'Testing',
         orderHint: 'Priority: with Free search (auto) selected, providers are tried top-down and fall back on failure.',
         testHint: 'A test is one real minimal search and costs one quota unit per provider.',
+        lastProvider: 'Last · {provider} · {time}',
+        lastNone: 'Last · no search yet',
         currentProvider: 'Current provider',
         unsetProvider: 'not set',
         adopt: 'Use this plugin',
@@ -240,6 +244,7 @@ window.__ModuleLoader__.load({
         const [entries, setEntries] = React.useState(undefined)
         const [order, setOrder] = React.useState(DEFAULT_ORDER)
         const [currentProvider, setCurrentProvider] = React.useState(null)
+        const [lastProvider, setLastProvider] = React.useState(null)
         const [loadError, setLoadError] = React.useState(undefined)
         const [drafts, setDrafts] = React.useState({})
         const [busy, setBusy] = React.useState(undefined)
@@ -270,6 +275,7 @@ window.__ModuleLoader__.load({
               setOrder(response.value.rows.map((row) => row.id).filter((id) => BY_ID.has(id)))
             }
             setCurrentProvider(typeof response.value?.searchProvider === 'string' ? response.value.searchProvider : null)
+            setLastProvider(response.value?.lastProvider ?? null)
           } catch {
             // 状态读不到不影响填 Key，保留当前值即可。
           }
@@ -464,6 +470,9 @@ window.__ModuleLoader__.load({
           h('div', { className: 'wsf-flow' }),
           h('div', { className: 'wsf-status' },
             h('span', { className: 'wsf-state' }, `${t('currentProvider')} · ${currentProvider ?? t('unsetProvider')}`),
+            h('span', { className: 'wsf-state' }, lastProvider === null
+              ? t('lastNone')
+              : t('lastProvider', { provider: lastProvider.title ?? lastProvider.id, time: clockOf(lastProvider.at) })),
             usingAuto
               ? h('span', { className: 'wsf-badge is-ok' }, t('inUseAuto'))
               : h('button', {
@@ -577,6 +586,18 @@ window.__ModuleLoader__.load({
     function shorten(value, limit) {
       const text = typeof value === 'string' ? value : String(value ?? '')
       return text.length <= limit ? text : `${text.slice(0, limit)}…`
+    }
+
+    /**
+     * 把 ISO 时间显示成本地时:分，时间缺失或非法时返回空串。
+     * @param iso - ISO-8601 时间。
+     * @returns 形如 14:05 的本地时间。
+     */
+    function clockOf(iso) {
+      if (typeof iso !== 'string') return ''
+      const at = new Date(iso)
+      if (Number.isNaN(at.getTime())) return ''
+      return at.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
 
     return {

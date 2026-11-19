@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- 聚合 provider 的结果在 `content` 顶部标出实际提供者（如 `来源：Firecrawl`），面板顶部同时显示「上次由谁提供」与时间；来源落盘在 `state.json` 的 `lastProvider`。
+
 ## [2.0.0]
 
 ### Added

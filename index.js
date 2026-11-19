@@ -62,7 +62,7 @@ export const name = 'free-dsh-search'
 export const inject = ['web']
 
 // 导出给自测脚本使用（scripts/selftest.mjs）；对外仍只有 apply 参与运行时装配。
-export { createAutoProvider, createSearchProvider, PROVIDER_SPECS, resolveOrder, shouldAutoAdopt }
+export { annotateResult, createAutoProvider, createSearchProvider, PROVIDER_SPECS, resolveOrder, shouldAutoAdopt }
 
 /** 聚合 provider 的 id，也是设置页「Web search provider」菜单里的那一项。 */
 const AUTO_PROVIDER_ID = 'free-search'
@@ -167,7 +167,7 @@ let cachedState
 
 /**
  * 读落盘状态，读不到或格式不对时回落到默认值。
- * @returns { order: string[], adopted: boolean }
+ * @returns { order: string[], adopted: boolean, lastProvider?: { id: string, title: string, at: string } }
  */
 async function loadState() {
   if (cachedState !== undefined) return cachedState
@@ -176,6 +176,7 @@ async function loadState() {
     cachedState = {
       order: Array.isArray(parsed?.order) ? parsed.order.filter((id) => typeof id === 'string') : [...DEFAULT_ORDER],
       adopted: parsed?.adopted === true,
+      ...isRecord(parsed?.lastProvider) ? { lastProvider: parsed.lastProvider } : {},
     }
   } catch {
     cachedState = { order: [...DEFAULT_ORDER], adopted: false }
@@ -363,7 +364,11 @@ function createAutoProvider(ctx, providers) {
         }
         attempted += 1
         try {
-          return await provider.search(request, signal)
+          const result = await provider.search(request, signal)
+          // 聚合状态下必须能看出结果来自哪一家：content 前缀足够便宜（十来个 token），
+          // 且 dsh-tool-web 只在 content 非空时才渲染答案段，因此这里统一补齐。
+          await saveState({ lastProvider: { id: spec.id, title: spec.title, at: new Date().toISOString() } })
+          return annotateResult(result, spec.title)
         } catch (error) {
           // 取消不是失败，不降级：直接把它交还给调用方。
           if (signal?.aborted === true) throw error
@@ -384,6 +389,20 @@ function createAutoProvider(ctx, providers) {
       )
     },
   }
+}
+
+/**
+ * 在结果前面标出实际提供者：content 已有直答时前置一行，没有时用这一行补位。
+ * @param result - 单家 provider 的搜索结果。
+ * @param title - 该 provider 的显示名。
+ * @returns 带来源标注的结果。
+ */
+function annotateResult(result, title) {
+  const marker = `来源：${title}`
+  const content = result.content === undefined || result.content.length === 0
+    ? marker
+    : `${marker}\n\n${result.content}`
+  return { ...result, content }
 }
 
 /**
@@ -475,6 +494,7 @@ async function handleState(ctx, providers) {
   return {
     autoProviderId: AUTO_PROVIDER_ID,
     searchProvider: currentSearchProvider(ctx) ?? null,
+    lastProvider: (await loadState()).lastProvider ?? null,
     rows,
   }
 }

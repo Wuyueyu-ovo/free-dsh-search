@@ -3,7 +3,7 @@
  * 用桩替换 fetch 与凭据服务；运行：node scripts/selftest.mjs
  */
 import assert from 'node:assert/strict'
-import { PROVIDER_SPECS, createAutoProvider, createSearchProvider, resolveOrder, shouldAutoAdopt } from '../index.js'
+import { PROVIDER_SPECS, annotateResult, createAutoProvider, createSearchProvider, resolveOrder, shouldAutoAdopt } from '../index.js'
 
 /** 记录每个 provider 实际发出的请求，便于断言鉴权头与请求体。 */
 const requests = []
@@ -180,6 +180,11 @@ globalThis.fetch = async (url, init) => {
 }
 const fallenBack = await auto.search({ query: 'q', maxResults: 2 })
 assert.equal(fallenBack.sources[0].url, 'https://fallback.example/', '失败后应降级到下一家')
+assert.equal(fallenBack.content, '来源：Serper', '聚合结果应标出实际提供者（该载荷没有直答，标注补位）')
+
+// 来源标注：没有直答时用标注补位，有直答时前置一行。
+assert.equal(annotateResult({ content: undefined, sources: [], truncated: false }, 'Exa').content, '来源：Exa')
+assert.equal(annotateResult({ content: '直答', sources: [], truncated: false }, 'Tavily').content, '来源：Tavily\n\n直答')
 
 // 全部失败时抛汇总错误。
 globalThis.fetch = async () => { throw new Error('all down') }
