@@ -54,16 +54,19 @@ A DSH "version" and a DSH "surface" are separate things. This bundle has two hal
 | Range | Status |
 |---|---|
 | `0.2.2-rc.3` | **Verified** (every item below checked) |
+| `0.2.2-rc.5` | **Verified**: real searches, fallback chain, source annotation, `lastProvider` persistence and the panel's test RPC all pass |
 | Later `0.2.x` releases such as `0.2.2` / `0.2.3-rc.x` | Installs (`engines.dsh: ^0.2.2-rc.3`), unverified |
 | `0.3.0` and newer | Refused by `engines.dsh`; a per-profile version exemption is required |
 
 The range is evaluated by dsh itself with `semver.satisfies(..., { includePrerelease: true })`, so prereleases on the 0.2 line are not rejected. It describes the whole 0.2 line, not per-release testing — re-run the checklist below after upgrading.
 
+Since `0.2.2-rc.4` the shipped base composition no longer pins `web.searchProvider` to `deepseek-search-api`; the default is route-based auto-selection (Messages search on DeepSeek model routes). A profile that already pins `free-search` is unaffected. With nothing pinned, the seam silently prefers DeepSeek's providers instead of raising an ambiguity error — exactly the new default (`undefined`) this plugin's one-time adoption covers.
+
 ### Surfaces and platforms
 
 | Surface | Search (Host) | Panel (Client) | Status |
 |---|---|---|---|
-| **Desktop · Windows** (Electron, packed in `app.asar`) | ✅ | ✅ | **Verified** on 0.2.2-rc.3 |
+| **Desktop · Windows** (Electron, packed in `app.asar`) | ✅ | ✅ | **Verified** fully on 0.2.2-rc.3 and 0.2.2-rc.5 |
 | **Desktop · macOS** | should work | should work | **Not tested**. Same packaging, no platform-specific code; if `@deepseek-ai/dsh-web` cannot be resolved inside the archive, errors degrade to a local class that still carries `code` |
 | **Web (`dsh web` / npm install, browser)** | ✅ | ✅ | **Not tested**. Only the install layout differs (no asar); in a nested pnpm layout resolution falls back as above |
 | **Headless CLI (headless / ACP / SDK profiles)** | ✅ when a `web` service row exists | ❌ no browser surface | Put keys in `$DSH_HOME/.credentials.yaml` or the environment and pin `searchProvider` in the profile config |

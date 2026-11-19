@@ -8,6 +8,11 @@
 
 - 聚合 provider 的结果在 `content` 顶部标出实际提供者（如 `来源：Firecrawl`），面板顶部同时显示「上次由谁提供」与时间；来源落盘在 `state.json` 的 `lastProvider`。
 
+### Changed
+
+- 兼容性复核：DSH `0.2.2-rc.5` 实测通过（真实搜索、聚合降级、来源标注、`lastProvider` 落盘，以及面板的测试 RPC 均正常），无需改动代码即可在该版本运行。
+- 记录上游语义变化：`0.2.2-rc.4` 起官方基础组合不再固定 `web.searchProvider`，默认按模型路由自动选择；已钉住 `free-search` 的 profile 不受影响，未钉住时上游静默优先 DeepSeek 的搜索源，本插件的一次性自动接管覆盖该新默认。
+
 ## [2.0.0]
 
 ### Added

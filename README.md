@@ -57,16 +57,19 @@ DSH 的「版本」和「形态」是两件事，能跑什么取决于两者的�
 | 范围 | 状态 |
 |---|---|
 | `0.2.2-rc.3` | **实测可用**（下表逐项验证过） |
+| `0.2.2-rc.5` | **实测可用**：真实搜索、聚合降级、来源标注、`lastProvider` 落盘，以及面板的测试 RPC 均通过 |
 | `0.2.2` / `0.2.3-rc.x` 等 0.2.x 后续版本 | 装得上（`engines.dsh: ^0.2.2-rc.3`），未验证 |
 | `0.3.0` 及以后 | 被 `engines.dsh` 拒绝，需在 profile 里授予版本豁免后再装 |
 
 `^0.2.2-rc.3` 用的是 dsh 自己的判定（`semver.satisfies(..., { includePrerelease: true })`），所以 0.2 线上的 rc 版本不会被误拦。这个范围是我按"整条 0.2 线"给的，不代表逐版本测过——升级后请照下面的清单回归。
 
+从 `0.2.2-rc.4` 起，官方基础组合不再把 `web.searchProvider` 固定为 `deepseek-search-api`，默认改为按模型路由自动选择（DeepSeek 模型路由上走 Messages 搜索）。已在 profile 里钉住 `free-search` 的安装不受影响；而未钉住时上游会静默优先 DeepSeek 的搜索源，不再抛歧义错误——本插件的首次自动接管正好覆盖这个新默认（`undefined`）。
+
 ### 二、DSH 形态与平台
 
 | 形态 | 搜索（Host 半） | 插件页面板（Client 半） | 状态 |
 |---|---|---|---|
-| **Desktop · Windows**（Electron，打包在 `app.asar`） | ✅ | ✅ | **实测**：本机 0.2.2-rc.3 全通 |
+| **Desktop · Windows**（Electron，打包在 `app.asar`） | ✅ | ✅ | **实测**：本机 0.2.2-rc.3 与 0.2.2-rc.5 全通 |
 | **Desktop · macOS** | 理论可用 | 理论可用 | **未实测**。同一套打包，无平台相关代码；asar 内解析不到 `@deepseek-ai/dsh-web` 时会退化成带 `code` 的本地错误类，不会因此崩 |
 | **Web（`dsh web` / npm 安装，浏览器）** | ✅ | ✅ | **未实测**。差别只在安装布局（非 asar）；pnpm 嵌套布局下若解析不到 `@deepseek-ai/dsh-web`，同上走兜底 |
 | **CLI 无界面（headless / ACP / SDK profile）** | ✅（只要有 `web` 服务行） | ❌ 没有浏览器面 | Key 需写进 `$DSH_HOME/.credentials.yaml` 或环境变量，`searchProvider` 需在 profile 配置里钉住 |
